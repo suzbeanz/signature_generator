@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='favicon.png') }}" type="image/png">
+    <title>Hoppian Signature Apparatus</title>
+</head>
+<body>
+    <div class="container">
+        <img src="{{ url_for('static', filename='hhlogo2024.png') }}" alt="Hedy & Hopp Logo" class="logo">
+        <h1>Hoppian Signature Apparatus</h1>
+        <form method="POST" enctype="multipart/form-data">
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" required>
+
+            <label for="title">Title:</label>
+            <input type="text" id="title" name="title" required>
+
+            <label for="cell_number">Cell Number:</label>
+            <input type="text" id="cell_number" name="cell_number" required>
+
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
+
+            <label for="headshot">Upload Headshot:<br><em>Square Image Under 2mb</em></label>
+            <input type="file" id="headshot" name="headshot" accept="image/*" required>
+
+            <button type="submit">Generate Signature</button>
+        </form>
+
+        {% if signature %}
+    <h2>Your Generated Signature</h2>
+    <div class="signature-preview">
+        {{ signature|safe }}
+    </div>
+    <a href="{{ download_link }}">
+        <button class="download-btn">Download Signature</button>
+    </a>
+{% endif %}
+    </div>
+</body>
+</html>
