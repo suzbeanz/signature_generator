@@ -6,7 +6,6 @@ from werkzeug.utils import secure_filename
 from PIL import Image
 from google.cloud import storage
 
-# Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
