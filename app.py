@@ -20,6 +20,7 @@ print(f"Project ID: {project}")
 
 print(os.environ.get('GOOGLE_APPLICATION_CREDENTIALS'))
 
+# Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -44,8 +45,11 @@ template = """
 <html>
 <head>
     <style>
-        body {{ font-family: 'Avenir', sans-serif; color: #5c5a5b; }}
+        body {{ font-family: 'Avenir', sans-serif; color: #5c5a5b; background-image: url('{background_url}'); }}
         a {{ color: #DB499A; text-decoration: none; }}
+        .logo-container {{ display: flex; justify-content: center; align-items: center; margin-top: 20px; }}
+        .logo {{ max-width: 150px; height: auto; margin: 0 10px; }} /* Adjust the max-width as needed */
+        .podcast-logo {{ max-width: 50px; height: auto; margin: 0 10px; }} /* Adjust the max-width as needed */
     </style>
 </head>
 <body>
@@ -64,6 +68,12 @@ template = """
       </td>
     </tr>
   </table>
+  <div class="logo-container">
+    <a href="https://open.spotify.com/show/6cBADj7GMn7Rzou4dcVH3B" target="_blank">
+      <img src="{podcast_logo_url}" alt="Podcast Logo" class="podcast-logo">
+    </a>
+    <img src="{logo_url}" alt="Company Logo" class="logo">
+  </div>
 </div>
 </body>
 </html>
@@ -93,19 +103,14 @@ def upload_to_gcs(file_path, filename):
         raise
 
 def process_image(image_path):
-    """
-    Processes the uploaded image:
-    - Resizes it to 120x120 pixels.
-    - Adds a white background.
-    - Saves the processed image.
-    - Uploads it to GCS.
-    Returns the GCS URL of the processed image.
-    """
     try:
-        logger.info(f"Processing image: {image_path}")
-        with Image.open(image_path).convert("RGBA") as img:
-            img = img.resize((120, 120), Image.Resampling.LANCZOS)
-            background = Image.new('RGBA', (120, 120), (255, 255, 255, 255))
+        with Image.open(image_path) as img:
+            # Ensure the image has an alpha channel
+            if img.mode != 'RGBA':
+                img = img.convert('RGBA')
+            
+            # Process the image (example: add a background)
+            background = Image.new('RGBA', img.size, (255, 255, 255, 0))
             background.paste(img, (0, 0), img)
             processed_image_path = os.path.join(app.config['UPLOAD_FOLDER'], 'processed_' + os.path.basename(image_path))
             background.save(processed_image_path, "PNG")
@@ -140,6 +145,9 @@ def index():
             cell_number_raw = request.form['cell_number'].strip()
             email = request.form['email'].strip()
             calendar_link = request.form['calendar_link'].strip()
+            signature_year = request.form['signature_year']
+
+            logger.info(f"Form data: name={name}, title={title}, cell_number_raw={cell_number_raw}, email={email}, calendar_link={calendar_link}, signature_year={signature_year}")
 
             # Validate cell number if provided
             cell_number = None
@@ -174,11 +182,17 @@ def index():
             logger.info(f"Headshot saved to {headshot_path}")
 
             # Process the image and upload to GCS
-            try:
-                processed_headshot_url = process_image(headshot_path)
-            except RefreshError as e:
-                logger.error(f"Error refreshing credentials: {e}")
-                return "An error occurred while refreshing credentials. Please check your credentials and try again.", 500
+            processed_headshot_url = process_image(headshot_path)
+
+            # Determine the logo based on the selected year
+            if signature_year == '2025':
+                logo_url = url_for('static', filename='hhlogo2025.png')
+            else:
+                logo_url = url_for('static', filename='hhlogo2024.png')
+
+            # Use the same background image regardless of the year
+            background_url = url_for('static', filename='background.png')
+            podcast_logo_url = url_for('static', filename='pod.png')
 
             # Generate signature HTML
             signature_html = template.format(
@@ -187,7 +201,10 @@ def index():
                 cell_number=f"<strong>C </strong>{cell_number}" if cell_number else "",
                 email=email,
                 headshot_url=processed_headshot_url,
-                calendar_link=f'<p style="margin: 4px 0;"><a href="{calendar_link}">Book Time with Me</a></p>' if calendar_link else ""
+                calendar_link=f'<p style="margin: 4px 0;"><a href="{calendar_link}">Book Time with Me</a></p>' if calendar_link else "",
+                logo_url=logo_url,
+                background_url=background_url,
+                podcast_logo_url=podcast_logo_url
             )
 
             # Save the signature HTML to the uploads directory

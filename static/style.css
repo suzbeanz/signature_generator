@@ -38,8 +38,8 @@ body {
 .logo {
     display: block;
     margin: 0 auto 30px;
-    width: 150px;
-    height: auto;
+    max-width: 150px; /* Adjust the max-width as needed */
+    height: auto; /* Maintain aspect ratio */
 }
 
 h1 {

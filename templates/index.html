@@ -6,6 +6,60 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <link rel="icon" href="{{ url_for('static', filename='favicon.png') }}" type="image/png">
     <title>Hoppian Signature Apparatus</title>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.querySelector('form');
+            const preview = document.querySelector('.signature-preview');
+
+            form.addEventListener('input', function() {
+                const formData = new FormData(form);
+                const name = formData.get('name').toUpperCase();
+                const title = formData.get('title').charAt(0).toUpperCase() + formData.get('title').slice(1);
+                const cellNumber = formData.get('cell_number');
+                const email = formData.get('email');
+                const calendarLink = formData.get('calendar_link');
+                const signatureYear = formData.get('signature_year');
+                const headshot = formData.get('headshot');
+
+                let logoUrl = '';
+                if (signatureYear === '2025') {
+                    logoUrl = '{{ url_for("static", filename="hhlogo2025.png") }}';
+                } else {
+                    logoUrl = '{{ url_for("static", filename="hhlogo2024.png") }}';
+                }
+
+                const backgroundUrl = '{{ url_for("static", filename="background.png") }}';
+                const podcastLogoUrl = '{{ url_for("static", filename="pod.png") }}';
+
+                const signatureHtml = `
+                    <div style="width: 600px;">
+                      <table cellpadding="0" cellspacing="0" style="width: 100%; border-spacing: 0;">
+                        <tr>
+                          <td style="width: 120px; vertical-align: top; padding: 0;">
+                            <img src="${headshot}" alt="${name} Headshot" style="width: 120px; height: 120px; display: block; border-radius: 0 0 45px 0;">
+                          </td>
+                          <td style="vertical-align: top; padding-left: 10px; text-align: left;">
+                            <p style="margin: 1px 0;"><strong>${name}</strong></p>
+                            <p style="margin: 4px 0;"><em>${title}</em></p>
+                            ${cellNumber ? `<p style="margin: 4px 0;"><strong>C </strong>${cellNumber}</p>` : ''}
+                            <p style="margin: 4px 0;"><strong>E </strong><a href="mailto:${email}">${email}</a></p>
+                            ${calendarLink ? `<p style="margin: 4px 0;"><a href="${calendarLink}">Book Time with Me</a></p>` : ''}
+                          </td>
+                        </tr>
+                      </table>
+                      <div class="logo-container">
+                        <a href="https://open.spotify.com/show/6cBADj7GMn7Rzou4dcVH3B" target="_blank">
+                          <img src="${podcastLogoUrl}" alt="Podcast Logo" class="podcast-logo">
+                        </a>
+                        <img src="${logoUrl}" alt="Company Logo" class="logo">
+                      </div>
+                    </div>
+                `;
+
+                preview.innerHTML = signatureHtml;
+            });
+        });
+    </script>
 </head>
 <body>
     <div class="container">
@@ -30,6 +84,12 @@
             <label for="headshot">Upload Headshot (required):<br><em>Square Image Under 2mb</em></label>
             <input type="file" id="headshot" name="headshot" accept="image/*" required>
 
+            <label for="signature_year">Select Signature Year:</label>
+            <input type="radio" id="signature_2024" name="signature_year" value="2024" checked>
+            <label for="signature_2024">2024</label>
+            <input type="radio" id="signature_2025" name="signature_year" value="2025">
+            <label for="signature_2025">2025</label>
+
             <button type="submit">Generate Signature</button>
         </form>
 
@@ -38,6 +98,7 @@
         <div class="signature-preview">
             {{ signature|safe }}
         </div>
+        <a href="{{ download_link }}" class="download-btn">Download Signature</a>
         {% endif %}
     </div>
 </body>
