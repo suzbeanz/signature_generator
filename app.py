@@ -20,7 +20,6 @@ print(f"Project ID: {project}")
 
 print(os.environ.get('GOOGLE_APPLICATION_CREDENTIALS'))
 
-# Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
