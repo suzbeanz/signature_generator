@@ -5,6 +5,20 @@ from flask import Flask, render_template, request, url_for, send_file
 from werkzeug.utils import secure_filename
 from PIL import Image
 from google.cloud import storage
+from google.auth.exceptions import RefreshError
+from google.auth import default
+from google.auth import exceptions as auth_exceptions  # Import exceptions
+
+# Set the environment variable for Google Cloud credentials
+os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = os.path.join(
+    os.path.dirname(__file__), 'credentials', 'hoppian-signature-apparatus-363df3579c99.json'
+)
+
+credentials, project = default()
+print(f"Credentials: {credentials}")
+print(f"Project ID: {project}")
+
+print(os.environ.get('GOOGLE_APPLICATION_CREDENTIALS'))
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -17,8 +31,7 @@ UPLOAD_FOLDER = 'static/uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-# Fetch BUCKET_NAME from environment variables
-BUCKET_NAME = os.environ.get('BUCKET_NAME')
+BUCKET_NAME = os.environ.get('BUCKET_NAME', 'hoppian-signature-images')
 if not BUCKET_NAME:
     logger.error("BUCKET_NAME environment variable is not set.")
     raise EnvironmentError("BUCKET_NAME environment variable is not set.")
@@ -46,28 +59,19 @@ template = """
       <td style="vertical-align: top; padding-left: 10px; text-align: left;">
         <p style="margin: 1px 0;"><strong>{name}</strong></p>
         <p style="margin: 4px 0;"><em>{title}</em></p>
-        <p style="margin: 4px 0;"><strong>C </strong>{cell_number}</p>
+        {cell_number}
         <p style="margin: 4px 0;"><strong>E </strong><a href="mailto:{email}">{email}</a></p>
-      </td>
-    </tr>
-    <tr><td colspan="2" style="height: 10px;"></td></tr>
-    <tr>
-      <td colspan="2" style="padding: 0; text-align: left;">
-        <a href="https://hedyandhopp.com/" style="display: inline;"><img src="https://i.imgur.com/iLpJv2j.png" alt="Hedy & Hopp" style="vertical-align: top; width: 320px; height: 82px;"></a>
-        <a href="https://podcasters.spotify.com/pod/show/wearemarketinghappy" style="display: inline; margin-left: 1%;"><img src="https://i.imgur.com/tpTA5J3.png" alt="We Are, Marketing Happy Podcast" style="vertical-align: top; width: 120px; height: 80px;"></a>
+        {calendar_link}
       </td>
     </tr>
   </table>
-
 </div>
 </body>
 </html>
 """
 
 def allowed_file(filename):
-    """Check if the uploaded file has an allowed extension."""
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 def upload_to_gcs(file_path, filename):
     """
@@ -75,15 +79,16 @@ def upload_to_gcs(file_path, filename):
     """
     try:
         logger.info(f"Uploading {filename} to GCS bucket {BUCKET_NAME}.")
-        client = storage.Client()
+        client = storage.Client()  # Use the authenticated client
         bucket = client.bucket(BUCKET_NAME)
         blob = bucket.blob(filename)
         blob.upload_from_filename(file_path)
-        # Make the blob publicly viewable (optional)
-        # blob.make_public()
         gcs_url = f"https://storage.googleapis.com/{BUCKET_NAME}/{filename}"
         logger.info(f"File uploaded to {gcs_url}")
         return gcs_url
+    except auth_exceptions.GoogleAuthError as e:
+        logger.error(f"Authentication error: {e}")
+        raise
     except Exception as e:
         logger.exception(f"Failed to upload to GCS: {e}")
         raise
@@ -118,6 +123,13 @@ def process_image(image_path):
 
     return gcs_url
 
+def check_credentials():
+    credentials, project = default()
+    print(f"Credentials: {credentials}")
+    print(f"Project ID: {project}")
+
+check_credentials()
+
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
@@ -128,13 +140,16 @@ def index():
             title = request.form['title'].strip().title()
             cell_number_raw = request.form['cell_number'].strip()
             email = request.form['email'].strip()
+            calendar_link = request.form['calendar_link'].strip()
 
-            # Validate cell number
-            cell_number_digits = re.sub(r'\D', '', cell_number_raw)
-            if len(cell_number_digits) != 10:
-                logger.error("Invalid cell number format.")
-                return "Invalid cell number format. Please enter a 10-digit number.", 400
-            cell_number = f"({cell_number_digits[:3]}) {cell_number_digits[3:6]}-{cell_number_digits[6:]}"
+            # Validate cell number if provided
+            cell_number = None
+            if cell_number_raw:
+                cell_number_digits = re.sub(r'\D', '', cell_number_raw)
+                if len(cell_number_digits) != 10:
+                    logger.error("Invalid cell number format.")
+                    return "Invalid cell number format. Please enter a 10-digit number.", 400
+                cell_number = f"({cell_number_digits[:3]}) {cell_number_digits[3:6]}-{cell_number_digits[6:]}"
 
             # Validate email (basic validation)
             if not re.match(r"[^@]+@[^@]+\.[^@]+", email):
@@ -160,15 +175,20 @@ def index():
             logger.info(f"Headshot saved to {headshot_path}")
 
             # Process the image and upload to GCS
-            processed_headshot_url = process_image(headshot_path)
+            try:
+                processed_headshot_url = process_image(headshot_path)
+            except RefreshError as e:
+                logger.error(f"Error refreshing credentials: {e}")
+                return "An error occurred while refreshing credentials. Please check your credentials and try again.", 500
 
             # Generate signature HTML
             signature_html = template.format(
                 name=name,
                 title=title,
-                cell_number=cell_number,
+                cell_number=f"<strong>C </strong>{cell_number}" if cell_number else "",
                 email=email,
-                headshot_url=processed_headshot_url
+                headshot_url=processed_headshot_url,
+                calendar_link=f'<p style="margin: 4px 0;"><a href="{calendar_link}">Book Time with Me</a></p>' if calendar_link else ""
             )
 
             # Save the signature HTML to the uploads directory
@@ -182,7 +202,6 @@ def index():
         except Exception as e:
             logger.exception(f"Error processing form submission: {e}")
             return f"An error occurred: {e}", 500
-
     return render_template('index.html')
 
 @app.route('/download/<filename>')
@@ -193,3 +212,6 @@ def download_file(filename):
     except Exception as e:
         logger.exception(f"Error sending file {filename}: {e}")
         return f"An error occurred: {e}", 500
+
+if __name__ == '__main__':
+    app.run(debug=True)

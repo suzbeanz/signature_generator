@@ -1,4 +1,4 @@
-git checkout -b "EOY Apparatus Update"<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -12,136 +12,33 @@ git checkout -b "EOY Apparatus Update"<!DOCTYPE html>
         <img src="{{ url_for('static', filename='hhlogo2024.png') }}" alt="Hedy & Hopp Logo" class="logo">
         <h1>Hoppian Signature Apparatus</h1>
         <form method="POST" enctype="multipart/form-data">
-            <label for="name">Name:</label>
+            <label for="name">Name (required):</label>
             <input type="text" id="name" name="name" required>
 
-            <label for="title">Title:</label>
+            <label for="title">Title (required):</label>
             <input type="text" id="title" name="title" required>
 
             <label for="cell_number">Cell Number:</label>
             <input type="text" id="cell_number" name="cell_number">
 
-            <label for="email">Email:</label>
+            <label for="email">Email (required):</label>
             <input type="email" id="email" name="email" required>
 
             <label for="calendar_link">Calendar Link:</label>
             <input type="url" id="calendar_link" name="calendar_link">
 
-            <label for="headshot">Upload Headshot:<br><em>Square Image Under 2mb</em></label>
+            <label for="headshot">Upload Headshot (required):<br><em>Square Image Under 2mb</em></label>
             <input type="file" id="headshot" name="headshot" accept="image/*" required>
 
             <button type="submit">Generate Signature</button>
         </form>
 
         {% if signature %}
-    <h2>Your Generated Signature</h2>
-    <div class="signature-preview">
-        {{ signature|safe }}
-    </div>
-    <a href="{{ download_link }}">
-        <button class="download-btn">Download Signature</button>
-    </a>
-{% endif %}
+        <h2>Your Generated Signature</h2>
+        <div class="signature-preview">
+            {{ signature|safe }}
+        </div>
+        {% endif %}
     </div>
 </body>
 </html>
-
-@app.route('/', methods=['GET', 'POST'])
-def index():
-    if request.method == 'POST':
-        try:
-            logger.info("Received form submission.")
-            # Retrieve and sanitize form data
-            name = request.form['name'].strip().upper()
-            title = request.form['title'].strip().title()
-            cell_number_raw = request.form['cell_number'].strip()
-            email = request.form['email'].strip()
-            calendar_link = request.form['calendar_link'].strip()
-
-            # Validate cell number if provided
-            cell_number = None
-            if cell_number_raw:
-                cell_number_digits = re.sub(r'\D', '', cell_number_raw)
-                if len(cell_number_digits) != 10:
-                    logger.error("Invalid cell number format.")
-                    return "Invalid cell number format. Please enter a 10-digit number.", 400
-                cell_number = f"({cell_number_digits[:3]}) {cell_number_digits[3:6]}-{cell_number_digits[6:]}"
-
-            # Validate email (basic validation)
-            if not re.match(r"[^@]+@[^@]+\.[^@]+", email):
-                logger.error("Invalid email format.")
-                return "Invalid email format. Please enter a valid email address.", 400
-
-            # Handle headshot upload
-            if 'headshot' not in request.files:
-                logger.error("No headshot part in the request.")
-                return "No headshot part in the request.", 400
-            headshot = request.files['headshot']
-            if headshot.filename == '':
-                logger.error("No selected file for headshot.")
-                return "No selected file for headshot.", 400
-            if not allowed_file(headshot.filename):
-                logger.error("Unsupported file extension for headshot.")
-                return "Unsupported file type. Please upload a PNG, JPG, JPEG, or GIF image.", 400
-
-            # Secure the filename and save the headshot
-            headshot_filename = secure_filename(headshot.filename)
-            headshot_path = os.path.join(app.config['UPLOAD_FOLDER'], headshot_filename)
-            headshot.save(headshot_path)
-            logger.info(f"Headshot saved to {headshot_path}")
-
-            # Process the image and upload to GCS
-            processed_headshot_url = process_image(headshot_path)
-
-            # Generate signature HTML
-            template = """
-<!DOCTYPE html>
-<html>
-<head>
-    <style>
-        body {{ font-family: 'Avenir', sans-serif; color: #5c5a5b; }}
-        a {{ color: #DB499A; text-decoration: none; }}
-    </style>
-</head>
-<body>
-<div style="width: 600px;">
-  <table cellpadding="0" cellspacing="0" style="width: 100%; border-spacing: 0;">
-    <tr>
-      <td style="width: 120px; vertical-align: top; padding: 0;">
-        <img src="{headshot_url}" alt="{name} Headshot" style="width: 120px; height: 120px; display: block; border-radius: 0 0 45px 0;">
-      </td>
-      <td style="vertical-align: top; padding-left: 10px; text-align: left;">
-        <p style="margin: 1px 0;"><strong>{name}</strong></p>
-        <p style="margin: 4px 0;"><em>{title}</em></p>
-        {cell_number}
-        <p style="margin: 4px 0;"><strong>E </strong><a href="mailto:{email}">{email}</a></p>
-        {calendar_link}
-      </td>
-    </tr>
-  </table>
-</div>
-</body>
-</html>
-"""
-
-            signature_html = template.format(
-                name=name,
-                title=title,
-                cell_number=f"<strong>C </strong>{cell_number}" if cell_number else "",
-                email=email,
-                headshot_url=processed_headshot_url,
-                calendar_link=f'<p style="margin: 4px 0;"><a href="{calendar_link}">Book Time with Me</a></p>' if calendar_link else ""
-            )
-
-            # Save the signature HTML to the uploads directory
-            signature_filename = f"signature_{name.lower().replace(' ', '_')}.html"
-            signature_filepath = os.path.join(app.config['UPLOAD_FOLDER'], signature_filename)
-            with open(signature_filepath, 'w') as f:
-                f.write(signature_html)
-            logger.info(f"Signature HTML saved to {signature_filepath}")
-
-            return render_template('index.html', signature=signature_html, download_link=url_for('download_file', filename=signature_filename))
-        except Exception as e:
-            logger.exception(f"Error processing form submission: {e}")
-            return f"An error occurred: {e}", 500
-    return render_template('index.html')
