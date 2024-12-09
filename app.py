@@ -47,9 +47,18 @@ template = """
     <style>
         body {{ font-family: 'Avenir', sans-serif; color: #5c5a5b; background-image: url('{background_url}'); }}
         a {{ color: #DB499A; text-decoration: none; }}
-        .logo-container {{ display: flex; justify-content: center; align-items: center; margin-top: 20px; }}
-        .logo {{ max-width: 150px; height: auto; margin: 0 10px; }} /* Adjust the max-width as needed */
-        .podcast-logo {{ max-width: 50px; height: auto; margin: 0 10px; }} /* Adjust the max-width as needed */
+        .banner-container {{
+            text-align: left;
+            margin-top: 20px;
+        }}
+        .banner-container a {{
+            display: inline;
+            margin-right: 10px;
+            vertical-align: top;
+        }}
+        .banner-container img {{
+            vertical-align: top;
+        }}
     </style>
 </head>
 <body>
@@ -68,11 +77,13 @@ template = """
       </td>
     </tr>
   </table>
-  <div class="logo-container">
-    <a href="https://open.spotify.com/show/6cBADj7GMn7Rzou4dcVH3B" target="_blank">
-      <img src="{podcast_logo_url}" alt="Podcast Logo" class="podcast-logo">
+  <div class="banner-container">
+    <a href="https://hedyandhopp.com/" style="display: inline;">
+      <img src="{logo_url}" alt="Hedy & Hopp Banner" style="vertical-align: top; width: auto; height: 82px;">
     </a>
-    <img src="{logo_url}" alt="Company Logo" class="logo">
+    <a href="https://podcasters.spotify.com/pod/show/wearemarketinghappy" style="display: inline; margin-left: 1%;">
+      <img src="{podcast_logo_url}" alt="We Are, Marketing Happy Podcast" style="vertical-align: top; width: 120px; height: 80px;">
+    </a>
   </div>
 </div>
 </body>
@@ -230,4 +241,4 @@ def download_file(filename):
         return f"An error occurred: {e}", 500
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True)

@@ -5,9 +5,18 @@
     <style>
         body { font-family: 'Avenir', sans-serif; color: #5c5a5b; background-image: url('/static/background.png'); }
         a { color: #DB499A; text-decoration: none; }
-        .logo-container { display: flex; justify-content: center; align-items: center; margin-top: 20px; }
-        .logo { max-width: 150px; height: auto; margin: 0 10px; } /* Adjust the max-width as needed */
-        .podcast-logo { max-width: 50px; height: auto; margin: 0 10px; } /* Adjust the max-width as needed */
+        .banner-container {
+            text-align: left;
+            margin-top: 20px;
+        }
+        .banner-container a {
+            display: inline;
+            margin-right: 10px;
+            vertical-align: top;
+        }
+        .banner-container img {
+            vertical-align: top;
+        }
     </style>
 </head>
 <body>
@@ -19,18 +28,20 @@
       </td>
       <td style="vertical-align: top; padding-left: 10px; text-align: left;">
         <p style="margin: 1px 0;"><strong>SUZIE SCHMITT</strong></p>
-        <p style="margin: 4px 0;"><em>Sr. Dig Prod</em></p>
+        <p style="margin: 4px 0;"><em>Sr. Digital Prod</em></p>
         <strong>C </strong>(314) 566-1696
         <p style="margin: 4px 0;"><strong>E </strong><a href="mailto:suzie.schmitt@hedyandhopp.com">suzie.schmitt@hedyandhopp.com</a></p>
         
       </td>
     </tr>
   </table>
-  <div class="logo-container">
-    <a href="https://open.spotify.com/show/6cBADj7GMn7Rzou4dcVH3B" target="_blank">
-      <img src="/static/pod.png" alt="Podcast Logo" class="podcast-logo">
+  <div class="banner-container">
+    <a href="https://hedyandhopp.com/" style="display: inline;">
+      <img src="/static/hhlogo2025.png" alt="Hedy & Hopp Banner" style="vertical-align: top; width: auto; height: 82px;">
     </a>
-    <img src="/static/hhlogo2024.png" alt="Company Logo" class="logo">
+    <a href="https://podcasters.spotify.com/pod/show/wearemarketinghappy" style="display: inline; margin-left: 1%;">
+      <img src="/static/pod.png" alt="We Are, Marketing Happy Podcast" style="vertical-align: top; width: 120px; height: 80px;">
+    </a>
   </div>
 </div>
 </body>

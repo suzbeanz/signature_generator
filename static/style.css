@@ -30,7 +30,7 @@ body {
     padding: 30px;
     background-color: #fff;
     border-radius: 0 0 45px 0;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), 0 0 15px 5px #AAB0EC;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), 0 0 15px 5px #E5E6E5;
     position: relative;
     z-index: 1;
 }
@@ -38,15 +38,16 @@ body {
 .logo {
     display: block;
     margin: 0 auto 30px;
-    max-width: 150px; /* Adjust the max-width as needed */
-    height: auto; /* Maintain aspect ratio */
+    max-width: 150px;
+    height: auto;
+    position: center;
 }
 
 h1 {
     text-align: center;
     color: #DB499A;
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 48px;
+    font-size: 42px;
     margin-bottom: 30px;
 }
 
@@ -86,17 +87,8 @@ button:hover {
     background-color: #c43b7d;
 }
 
-.signature-preview {
-    margin-top: 30px;
-    margin-bottom:30px;
-    padding: 30px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    background-color: #f9f9f9;
-}
-
 .download-btn {
-    margin-top: 40px; /* Increased vertical padding */
+    margin-top: 40px;
     background-color: #DB499A;
     color: #FFFFFF;
     width: 40%;
@@ -110,4 +102,8 @@ button:hover {
 
 .download-btn:hover {
     background-color: #c43b7d;
+}
+
+.banner-container img {
+    vertical-align: top;
 }
