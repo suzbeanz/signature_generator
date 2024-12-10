@@ -3,14 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hoppian Signature Apparatus</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <link rel="icon" href="{{ url_for('static', filename='favicon.png') }}" type="image/png">
-    <title>Hoppian Signature Apparatus</title>
-  </head>
+</head>
 <body>
     <div class="container">
         <img src="{{ url_for('static', filename='hhlogo2024.png') }}" alt="Hedy & Hopp Logo" class="logo">
         <h1>Hoppian Signature Apparatus</h1>
+
+        {% if error_message %}
+            <div class="error-message">{{ error_message }}</div>
+        {% endif %}
+
         <form method="POST" enctype="multipart/form-data">
             <label for="name">Name (required):</label>
             <input type="text" id="name" name="name" required value="{{ name or '' }}">
@@ -30,21 +35,15 @@
             <label for="headshot">Upload Headshot (required):<br><em>Square Image Under 2MB</em></label>
             <input type="file" id="headshot" name="headshot" accept="image/*" required>
 
-            <label for="signature_year">Select Signature Year:</label>
-            <input type="radio" id="signature_2024" name="signature_year" value="2024" {% if signature_year == '2024' %}checked{% endif %}>
-            <label for="signature_2024">2024</label>
-            <input type="radio" id="signature_2025" name="signature_year" value="2025" {% if signature_year == '2025' %}checked{% endif %}>
-            <label for="signature_2025">2025</label>
-
             <button type="submit">Generate Signature</button>
         </form>
 
         {% if signature %}
-        <h2>Your Generated Signature</h2>
-        <div class="signature-preview">
-            {{ signature|safe }}
-        </div>
-        <a href="{{ download_link }}" class="download-btn">Download Signature</a>
+            <h2>Your Generated Signature</h2>
+            <div class="signature-preview">
+                {{ signature|safe }}
+            </div>
+            <a href="{{ download_link }}" class="download-btn">Download Signature</a>
         {% endif %}
     </div>
 </body>

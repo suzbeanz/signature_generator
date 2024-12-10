@@ -40,7 +40,6 @@ body {
     margin: 0 auto 30px;
     max-width: 150px;
     height: auto;
-    position: center;
 }
 
 h1 {
@@ -70,6 +69,10 @@ input[type="url"] {
     font-size: 16px;
 }
 
+input[type="radio"] {
+    margin-right: 5px;
+}
+
 button {
     width: 40%;
     padding: 15px;
@@ -87,6 +90,21 @@ button:hover {
     background-color: #c43b7d;
 }
 
+.error-message {
+    color: red;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.signature-preview {
+    margin-top: 30px;
+    margin-bottom: 30px;
+    padding: 30px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #f9f9f9;
+}
+
 .download-btn {
     margin-top: 40px;
     background-color: #DB499A;
@@ -98,6 +116,7 @@ button:hover {
     margin: 0 auto;
     border-radius: 4px;
     text-align: center;
+    text-decoration: none;
 }
 
 .download-btn:hover {

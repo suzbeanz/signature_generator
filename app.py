@@ -1,7 +1,7 @@
 import os
 import logging
 import re
-from flask import Flask, render_template, request, url_for, send_file
+from flask import Flask, render_template, request, url_for, send_file, redirect, send_from_directory
 from werkzeug.utils import secure_filename
 from PIL import Image
 from google.cloud import storage
@@ -79,10 +79,10 @@ template = """
   </table>
   <div class="banner-container">
     <a href="https://hedyandhopp.com/" style="display: inline;">
-      <img src="{logo_url}" alt="Hedy & Hopp Banner" style="vertical-align: top; width: auto; height: 82px;">
+      <img src="{logo_url}" alt="Hedy & Hopp Banner" style="vertical-align: top; width: auto; height: 85px;">
     </a>
     <a href="https://podcasters.spotify.com/pod/show/wearemarketinghappy" style="display: inline; margin-left: 1%;">
-      <img src="{podcast_logo_url}" alt="We Are, Marketing Happy Podcast" style="vertical-align: top; width: 120px; height: 80px;">
+      <img src="{podcast_logo_url}" alt="We Are, Marketing Happy Podcast" style="vertical-align: top; width: 82px; height: 80px;">
     </a>
   </div>
 </div>
@@ -114,29 +114,12 @@ def upload_to_gcs(file_path, filename):
         raise
 
 def process_image(image_path):
-    try:
-        with Image.open(image_path) as img:
-            # Ensure the image has an alpha channel
-            if img.mode != 'RGBA':
-                img = img.convert('RGBA')
-            
-            # Process the image (example: add a background)
-            background = Image.new('RGBA', img.size, (255, 255, 255, 0))
-            background.paste(img, (0, 0), img)
-            processed_image_path = os.path.join(app.config['UPLOAD_FOLDER'], 'processed_' + os.path.basename(image_path))
-            background.save(processed_image_path, "PNG")
-            logger.info(f"Image processed and saved to {processed_image_path}")
-    except Exception as e:
-        logger.exception(f"Failed to process image: {e}")
-        raise
-
-    try:
-        gcs_url = upload_to_gcs(processed_image_path, 'processed_' + os.path.basename(image_path))
-    except Exception as e:
-        logger.exception(f"Failed to upload processed image: {e}")
-        raise
-
-    return gcs_url
+    output_path = os.path.join(app.config['UPLOAD_FOLDER'], 'processed_' + os.path.basename(image_path))
+    with Image.open(image_path) as img:
+        img = img.convert('RGB')  # Ensure image is in RGB format
+        img = img.resize((120, 120))  # Resize to desired dimensions
+        img.save(output_path, 'JPEG', quality=85)
+    return output_path
 
 def check_credentials():
     credentials, project = default()
@@ -149,93 +132,140 @@ check_credentials()
 def index():
     if request.method == 'POST':
         try:
-            logger.info("Received form submission.")
-            # Retrieve and sanitize form data
-            name = request.form['name'].strip().upper()
-            title = request.form['title'].strip().title()
-            cell_number_raw = request.form['cell_number'].strip()
-            email = request.form['email'].strip()
-            calendar_link = request.form['calendar_link'].strip()
-            signature_year = request.form['signature_year']
+            # Get form data
+            name = request.form.get('name', '')
+            title = request.form.get('title', '')
+            cell_number = request.form.get('cell_number', '')
+            email = request.form.get('email', '')
+            calendar_link = request.form.get('calendar_link', '')
+            headshot = request.files.get('headshot')
 
-            logger.info(f"Form data: name={name}, title={title}, cell_number_raw={cell_number_raw}, email={email}, calendar_link={calendar_link}, signature_year={signature_year}")
+            # Process the headshot image
+            if headshot and allowed_file(headshot.filename):
+                # Save the uploaded image temporarily
+                filename = secure_filename(headshot.filename)
+                temp_image_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                headshot.save(temp_image_path)
 
-            # Validate cell number if provided
-            cell_number = None
-            if cell_number_raw:
-                cell_number_digits = re.sub(r'\D', '', cell_number_raw)
-                if len(cell_number_digits) != 10:
-                    logger.error("Invalid cell number format.")
-                    return "Invalid cell number format. Please enter a 10-digit number.", 400
-                cell_number = f"({cell_number_digits[:3]}) {cell_number_digits[3:6]}-{cell_number_digits[6:]}"
+                # Resize the image
+                processed_image_path = process_image(temp_image_path)
 
-            # Validate email (basic validation)
-            if not re.match(r"[^@]+@[^@]+\.[^@]+", email):
-                logger.error("Invalid email format.")
-                return "Invalid email format. Please enter a valid email address.", 400
+                # Upload the image to GCS or use local path
+                # If you're using GCS:
+                # headshot_url = upload_to_gcs(processed_image_path, filename)
+                # If not using GCS, use local path:
+                headshot_url = url_for('static', filename=f'uploads/{os.path.basename(processed_image_path)}')
 
-            # Handle headshot upload
-            if 'headshot' not in request.files:
-                logger.error("No headshot part in the request.")
-                return "No headshot part in the request.", 400
-            headshot = request.files['headshot']
-            if headshot.filename == '':
-                logger.error("No selected file for headshot.")
-                return "No selected file for headshot.", 400
-            if not allowed_file(headshot.filename):
-                logger.error("Unsupported file extension for headshot.")
-                return "Unsupported file type. Please upload a PNG, JPG, JPEG, or GIF image.", 400
+                # Remove the temporary file if needed
+                # os.remove(temp_image_path)
+                # os.remove(processed_image_path)
 
-            # Secure the filename and save the headshot
-            headshot_filename = secure_filename(headshot.filename)
-            headshot_path = os.path.join(app.config['UPLOAD_FOLDER'], headshot_filename)
-            headshot.save(headshot_path)
-            logger.info(f"Headshot saved to {headshot_path}")
-
-            # Process the image and upload to GCS
-            processed_headshot_url = process_image(headshot_path)
-
-            # Determine the logo based on the selected year
-            if signature_year == '2025':
-                logo_url = url_for('static', filename='hhlogo2025.png')
             else:
-                logo_url = url_for('static', filename='hhlogo2024.png')
+                error_message = "Invalid or missing headshot image."
+                return render_template(
+                    'index.html',
+                    name=name,
+                    title=title,
+                    cell_number=cell_number,
+                    email=email,
+                    calendar_link=calendar_link,
+                    error_message=error_message
+                )
 
-            # Use the same background image regardless of the year
-            background_url = url_for('static', filename='background.png')
+            # **Define logo_url here**
+            logo_url = url_for('static', filename='company_banner.png')
             podcast_logo_url = url_for('static', filename='pod.png')
+            background_url = url_for('static', filename='background.png')
 
-            # Generate signature HTML
-            signature_html = template.format(
+            # Generate the signature HTML
+            signature_html = f"""
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <style>
+                    body {{ font-family: 'Avenir', sans-serif; color: #5c5a5b; background-image: url('{background_url}'); }}
+                    a {{ color: #DB499A; text-decoration: none; }}
+                    .banner-container {{
+                        text-align: left;
+                        margin-top: 20px;
+                    }}
+                    .banner-container a {{
+                        display: inline;
+                        margin-right: 10px;
+                        vertical-align: top;
+                    }}
+                    .banner-container img {{
+                        vertical-align: top;
+                    }}
+                </style>
+            </head>
+            <body>
+            <div style="width: 600px;">
+              <table cellpadding="0" cellspacing="0" style="width: 100%; border-spacing: 0;">
+                <tr>
+                  <td style="width: 120px; vertical-align: top; padding: 0;">
+                    <img src="{headshot_url}" alt="{name} Headshot" style="width: 120px; height: 120px; display: block; border-radius: 0 0 45px 0;">
+                  </td>
+                  <td style="vertical-align: top; padding-left: 10px; text-align: left;">
+                    <p style="margin: 1px 0;"><strong>{name.upper()}</strong></p>
+                    <p style="margin: 4px 0;"><em>{title}</em></p>
+                    {f'<p style="margin: 4px 0;"><strong>C </strong>{cell_number}</p>' if cell_number else ''}
+                    <p style="margin: 4px 0;"><strong>E </strong><a href="mailto:{email}">{email}</a></p>
+                    {f'<p style="margin: 4px 0;"><a href="{calendar_link}">Book Time with Me</a></p>' if calendar_link else ''}
+                  </td>
+                </tr>
+              </table>
+              <div class="banner-container">
+                <a href="https://hedyandhopp.com/" style="display: inline;">
+                  <img src="{logo_url}" alt="Hedy & Hopp Banner" style="vertical-align: top; width: 320px; height: 82px;">
+                </a>
+                <a href="https://podcasters.spotify.com/pod/show/wearemarketinghappy" style="display: inline; margin-left: 1%;">
+                  <img src="{podcast_logo_url}" alt="We Are, Marketing Happy Podcast" style="vertical-align: top; width: 120px; height: 80px;">
+                </a>
+              </div>
+            </div>
+            </body>
+            </html>
+            """
+
+            # Save the signature HTML to a file
+            signature_filename = f"signature_{secure_filename(name.lower().replace(' ', '_'))}.html"
+            signature_file_path = os.path.join(app.config['UPLOAD_FOLDER'], signature_filename)
+            with open(signature_file_path, 'w') as f:
+                f.write(signature_html)
+
+            # Provide the signature and download link to the template
+            return render_template(
+                'index.html',
+                signature=signature_html,
+                download_link=url_for('download_file', filename=signature_filename),
                 name=name,
                 title=title,
-                cell_number=f"<strong>C </strong>{cell_number}" if cell_number else "",
+                cell_number=cell_number,
                 email=email,
-                headshot_url=processed_headshot_url,
-                calendar_link=f'<p style="margin: 4px 0;"><a href="{calendar_link}">Book Time with Me</a></p>' if calendar_link else "",
-                logo_url=logo_url,
-                background_url=background_url,
-                podcast_logo_url=podcast_logo_url
+                calendar_link=calendar_link
             )
 
-            # Save the signature HTML to the uploads directory
-            signature_filename = f"signature_{name.lower().replace(' ', '_')}.html"
-            signature_filepath = os.path.join(app.config['UPLOAD_FOLDER'], signature_filename)
-            with open(signature_filepath, 'w') as f:
-                f.write(signature_html)
-            logger.info(f"Signature HTML saved to {signature_filepath}")
-
-            return render_template('index.html', signature=signature_html, download_link=url_for('download_file', filename=signature_filename))
         except Exception as e:
             logger.exception(f"Error processing form submission: {e}")
-            return f"An error occurred: {e}", 500
-    return render_template('index.html')
+            error_message = f"An error occurred: {e}"
+            return render_template(
+                'index.html',
+                error_message=error_message,
+                name=request.form.get('name', ''),
+                title=request.form.get('title', ''),
+                cell_number=request.form.get('cell_number', ''),
+                email=request.form.get('email', ''),
+                calendar_link=request.form.get('calendar_link', '')
+            ), 500
+    else:
+        return render_template('index.html')
 
 @app.route('/download/<filename>')
 def download_file(filename):
     try:
         logger.info(f"Processing download for file: {filename}")
-        return send_file(os.path.join(app.config['UPLOAD_FOLDER'], filename), as_attachment=True)
+        return send_from_directory(app.config['UPLOAD_FOLDER'], filename, as_attachment=True)
     except Exception as e:
         logger.exception(f"Error sending file {filename}: {e}")
         return f"An error occurred: {e}", 500
