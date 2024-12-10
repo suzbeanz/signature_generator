@@ -18,7 +18,7 @@ body {
     color: #333;
     margin: 0;
     padding: 0;
-    background-image: url('/static/background.png'), linear-gradient(to bottom, #E5E6E5, #E5E6E5);
+    background-image: url('https://storage.googleapis.com/hoppian-signature-images/background.png'), linear-gradient(to bottom, #E5E6E5, #E5E6E5);
     background-repeat: no-repeat;
     background-position: top center, top;
     background-size: cover, 100%;

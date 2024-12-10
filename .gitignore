@@ -3,3 +3,17 @@ credentials/google-cloud-sdk-426.0.0-linux-x86_64.tar.gz
 google-cloud-sdk/bin/anthoscli
 google-cloud-sdk/data/cli/gcloud.json
 
+# Python bytecode
+__pycache__/
+*.pyc
+
+# Uploaded files and generated signatures
+static/uploads/
+
+# Credentials and sensitive information
+credentials/
+*.json
+
+# Other unnecessary files
+.DS_Store
+

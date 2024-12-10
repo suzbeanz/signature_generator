@@ -5,20 +5,11 @@ from flask import Flask, render_template, request, url_for, send_file, redirect,
 from werkzeug.utils import secure_filename
 from PIL import Image
 from google.cloud import storage
+import google.auth
 from google.auth.exceptions import RefreshError
 from google.auth import default
-from google.auth import exceptions as auth_exceptions  # Import exceptions
-
-# Set the environment variable for Google Cloud credentials
-os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = os.path.join(
-    os.path.dirname(__file__), 'credentials', 'hoppian-signature-apparatus-363df3579c99.json'
-)
-
-credentials, project = default()
-print(f"Credentials: {credentials}")
-print(f"Project ID: {project}")
-
-print(os.environ.get('GOOGLE_APPLICATION_CREDENTIALS'))
+from google.auth import exceptions as auth_exceptions 
+from urllib.parse import quote
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -26,7 +17,12 @@ logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 
-# Define the upload folder and ensure it exists
+os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = os.path.join(
+    os.path.dirname(__file__), 'credentials', 'hoppian-signature-apparatus-363df3579c99.json'
+)
+
+BUCKET_NAME = 'hoppian-signature-images'
+
 UPLOAD_FOLDER = 'static/uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
@@ -36,10 +32,8 @@ if not BUCKET_NAME:
     logger.error("BUCKET_NAME environment variable is not set.")
     raise EnvironmentError("BUCKET_NAME environment variable is not set.")
 
-# Define allowed extensions for uploads
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
-# HTML template for the signature
 template = """
 <!DOCTYPE html>
 <html>
@@ -93,25 +87,28 @@ template = """
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-def upload_to_gcs(file_path, filename):
-    """
-    Uploads the processed image to Google Cloud Storage and returns the public URL.
-    """
-    try:
-        logger.info(f"Uploading {filename} to GCS bucket {BUCKET_NAME}.")
-        client = storage.Client()  # Use the authenticated client
-        bucket = client.bucket(BUCKET_NAME)
-        blob = bucket.blob(filename)
-        blob.upload_from_filename(file_path)
-        gcs_url = f"https://storage.googleapis.com/{BUCKET_NAME}/{filename}"
-        logger.info(f"File uploaded to {gcs_url}")
-        return gcs_url
-    except auth_exceptions.GoogleAuthError as e:
-        logger.error(f"Authentication error: {e}")
-        raise
-    except Exception as e:
-        logger.exception(f"Failed to upload to GCS: {e}")
-        raise
+def upload_to_gcs(source_file_name, destination_blob_name):
+    """Uploads a file to GCS bucket and returns the public URL."""
+    storage_client = storage.Client()
+    bucket = storage_client.bucket(BUCKET_NAME)
+    blob = bucket.blob(destination_blob_name)
+
+    logging.info(f"Uploading {source_file_name} to GCS bucket {BUCKET_NAME} as {destination_blob_name}")
+    logging.info(f"Uploading file to GCS: {source_file_name} as {destination_blob_name}")
+
+    blob.upload_from_filename(source_file_name)
+
+    # Do not attempt to make the blob public or access its ACL.
+
+    # URL-encode the blob name in the public URL
+    encoded_blob_name = quote(destination_blob_name, safe='')
+
+    public_url = f"https://storage.googleapis.com/{BUCKET_NAME}/{encoded_blob_name}"
+
+    logging.info(f"Public URL: {public_url}")
+    logging.info(f"Generated public URL: {public_url}")
+
+    return public_url
 
 def process_image(image_path):
     output_path = os.path.join(app.config['UPLOAD_FOLDER'], 'processed_' + os.path.basename(image_path))
@@ -140,25 +137,34 @@ def index():
             calendar_link = request.form.get('calendar_link', '')
             headshot = request.files.get('headshot')
 
-            # Process the headshot image
             if headshot and allowed_file(headshot.filename):
-                # Save the uploaded image temporarily
                 filename = secure_filename(headshot.filename)
                 temp_image_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
                 headshot.save(temp_image_path)
 
-                # Resize the image
                 processed_image_path = process_image(temp_image_path)
 
-                # Upload the image to GCS or use local path
-                # If you're using GCS:
-                # headshot_url = upload_to_gcs(processed_image_path, filename)
-                # If not using GCS, use local path:
-                headshot_url = url_for('static', filename=f'uploads/{os.path.basename(processed_image_path)}')
+                destination_blob_name = f"headshots/{os.path.basename(processed_image_path)}"
+                try:
+                    # Attempt to upload and get the public URL
+                    headshot_url = upload_to_gcs(processed_image_path, destination_blob_name)
+                except Exception as e:
+                    logging.error(f"Exception during GCS upload: {e}", exc_info=True)
+                    error_message = f"An error occurred during file upload: {e}"
+                    # Handle the error as before
+                    return render_template(
+                        'index.html',
+                        name=name,
+                        title=title,
+                        cell_number=cell_number,
+                        email=email,
+                        calendar_link=calendar_link,
+                        error_message=error_message
+                    )
 
-                # Remove the temporary file if needed
-                # os.remove(temp_image_path)
-                # os.remove(processed_image_path)
+                # Clean up local files
+                os.remove(temp_image_path)
+                os.remove(processed_image_path)
 
             else:
                 error_message = "Invalid or missing headshot image."
@@ -172,12 +178,10 @@ def index():
                     error_message=error_message
                 )
 
-            # **Define logo_url here**
             logo_url = url_for('static', filename='company_banner.png')
             podcast_logo_url = url_for('static', filename='pod.png')
             background_url = url_for('static', filename='background.png')
 
-            # Generate the signature HTML
             signature_html = f"""
             <!DOCTYPE html>
             <html>
@@ -217,10 +221,10 @@ def index():
               </table>
               <div class="banner-container">
                 <a href="https://hedyandhopp.com/" style="display: inline;">
-                  <img src="{logo_url}" alt="Hedy & Hopp Banner" style="vertical-align: top; width: 320px; height: 82px;">
+                  <img src="https://storage.googleapis.com/hoppian-signature-images/company_banner.png" alt="Hedy & Hopp Banner" style="vertical-align: top; width: 320px; height: 82px;">
                 </a>
-                <a href="https://podcasters.spotify.com/pod/show/wearemarketinghappy" style="display: inline; margin-left: 1%;">
-                  <img src="{podcast_logo_url}" alt="We Are, Marketing Happy Podcast" style="vertical-align: top; width: 120px; height: 80px;">
+                <a href="https://open.spotify.com/show/6cBADj7GMn7Rzou4dcVH3B" style="display: inline; margin-left: 1%;">
+                  <img src="https://storage.googleapis.com/hoppian-signature-images/podcast_banner.png" alt="We Are, Marketing Happy Podcast" style="vertical-align: top; width: 120px; height: 80px;">
                 </a>
               </div>
             </div>
@@ -228,13 +232,11 @@ def index():
             </html>
             """
 
-            # Save the signature HTML to a file
             signature_filename = f"signature_{secure_filename(name.lower().replace(' ', '_'))}.html"
             signature_file_path = os.path.join(app.config['UPLOAD_FOLDER'], signature_filename)
             with open(signature_file_path, 'w') as f:
                 f.write(signature_html)
 
-            # Provide the signature and download link to the template
             return render_template(
                 'index.html',
                 signature=signature_html,
