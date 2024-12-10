@@ -1,1 +1,9 @@
+# Ignore Google Cloud SDK credentials and binaries
+credentials/google-cloud-sdk-426.0.0-linux-x86_64.tar.gz
+google-cloud-sdk/bin/anthoscli
+google-cloud-sdk/data/cli/gcloud.json
+
+credentials/google-cloud-sdk-426.0.0-linux-x86_64.tar.gz
+google-cloud-sdk/bin/anthoscli
+google-cloud-sdk/data/cli/gcloud.json
 google-cloud-sdk/
