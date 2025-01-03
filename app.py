@@ -281,7 +281,7 @@ def index():
           margin-bottom: 16px;
         "
       >
-        <strong>{title}</strong> HEDY &amp; HOPP<br />
+        <strong>{title},</strong> HEDY &amp; HOPP<br />
         <span style="color: #D4458E; font-weight: bold;">C</span> {cell_number}<br />
         <span style="color: #D4458E; font-weight: bold;">E</span> 
         <a 
