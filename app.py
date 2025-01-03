@@ -320,7 +320,7 @@ def index():
     
     <!-- Column 3: Podlogo (100 px high) -->
     <td
-      width="300"
+      width="400"
       background-color="#FFFFFF";
       valign="middle";
       style="
