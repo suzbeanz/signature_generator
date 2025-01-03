@@ -252,7 +252,7 @@ def index():
     
     <!-- Column 3: Text Area -->
     <td
-      width="300"
+      width="400"
       valign="top"
       style="
         padding: 10px;
@@ -318,7 +318,6 @@ def index():
       />
     </td>
     
-    <!-- Column 3: Podlogo (100 px high) -->
     <td
       width="400"
       background-color="#FFFFFF";
