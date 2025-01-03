@@ -55,7 +55,7 @@ template = """
     </style>
 </head>
 <body>
-<div style="width: 750px;">
+<div style="width: 800x;">
   <table cellpadding="0" cellspacing="0" style="width: 100%; border-spacing: 0;">
     <tr>
       <td style="width: 120px; vertical-align: top; padding: 0;">
@@ -193,7 +193,7 @@ def index():
 
 <!-- Outer table: 700px wide -->
 <table 
-  width="700"
+  width="850"
   border="0"
   cellpadding="0"
   cellspacing="0"
@@ -280,7 +280,7 @@ def index():
           margin-bottom: 16px;
         "
       >
-        <strong>{title}","</strong> HEDY &amp; HOPP<br />
+        <strong>{title}","</strong>, HEDY &amp; HOPP<br />
         <span style="color: #D4458E; font-weight: bold;">C</span> {cell_number}<br />
         <span style="color: #D4458E; font-weight: bold;">E</span> 
         <a 
