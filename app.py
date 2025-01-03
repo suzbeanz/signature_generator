@@ -17,6 +17,7 @@ logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 
+# Set the path to the credentials file
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = os.path.join(os.path.dirname(__file__), 'credentials', 'credentials.json')
 
 BUCKET_NAME = 'hoppian-signature-images'
