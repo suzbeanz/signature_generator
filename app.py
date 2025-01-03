@@ -280,7 +280,7 @@ def index():
           margin-bottom: 16px;
         "
       >
-        <strong>{title}","</strong>, HEDY &amp; HOPP<br />
+        <strong>{title}, </strong>HEDY &amp; HOPP<br />
         <span style="color: #D4458E; font-weight: bold;">C</span> {cell_number}<br />
         <span style="color: #D4458E; font-weight: bold;">E</span> 
         <a 
@@ -334,7 +334,7 @@ def index():
         <img
           src="https://storage.googleapis.com/hoppian-signature-images/podlogowhite400px.png"
           alt="Podcast Logo"
-          height="100"
+          width="280"
           style="
             display: inline-block;
             border: 0;
