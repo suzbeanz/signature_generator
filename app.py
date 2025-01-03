@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 
-os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = os.path.expanduser('~/secure_credentials/credentials.json')
+os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = os.path.join(os.path.dirname(__file__), 'credentials', 'credentials.json')
 
 BUCKET_NAME = 'hoppian-signature-images'
 
@@ -134,6 +134,7 @@ def index():
             cell_number = request.form.get('cell_number')
             email = request.form.get('email')
             headshot = request.files.get('headshot')
+            calendar_link = request.form.get('calendar_link', '')
 
             if headshot and allowed_file(headshot.filename):
                 filename = secure_filename(headshot.filename)
@@ -289,7 +290,7 @@ def index():
           {email}
         </a>
       </div>
-      
+      {f'<p><a href="{calendar_link}" style="color:#DB499A">Schedule Time With Me</a></p>' if calendar_link else ''}
       
     </td>
   </tr>
@@ -361,7 +362,8 @@ def index():
                 download_link=url_for('download_file', filename=signature_filename),
                 title=title,
                 cell_number=cell_number,
-                email=email
+                email=email,
+                calendar_link=calendar_link
             )
 
         except Exception as e:
