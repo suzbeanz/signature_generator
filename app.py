@@ -74,8 +74,8 @@ template = """
     <a href="https://hedyandhopp.com/" style="display: inline;">
       <img src="{logo_url}" alt="Hedy & Hopp Banner" style="vertical-align: top; width: auto; height: 85px;">
     </a>
-    <a href="https://podcasters.spotify.com/pod/show/wearemarketinghappy" style="display: inline; margin-left: 1%;">
-      <img src="{podcast_logo_url}" alt="We Are, Marketing Happy Podcast" style="vertical-align: top; width: 82px; height: 80px;">
+    <a href="https://open.spotify.com/show/6cBADj7GMn7Rzou4dcVH3B" style="display: inline; margin-left: 1%;">
+      <img src="https://storage.googleapis.com/hoppian-signature-images/podlogowhite400px.png" alt="We Are, Marketing Happy Podcast" style="vertical-align: top; width: 82px; height: 80px;">
     </a>
   </div>
 </div>
@@ -252,7 +252,7 @@ def index():
     
     <!-- Column 3: Text Area -->
     <td
-      width="250"
+      width="300"
       valign="top"
       style="
         padding: 10px;
@@ -320,7 +320,7 @@ def index():
     
     <!-- Column 3: Podlogo (100 px high) -->
     <td
-      width="250"
+      width="300"
       background-color="#FFFFFF";
       valign="middle";
       style="
@@ -334,7 +334,7 @@ def index():
         style="text-decoration: none; border: 0; outline: none;"
       >
         <img
-          src="https://storage.googleapis.com/hoppian-signature-images/podlogowide.png"
+          src="https://storage.googleapis.com/hoppian-signature-images/podlogowhite400px.png"
           alt="Podcast Logo"
           height="100"
           style="
