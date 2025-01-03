@@ -55,7 +55,7 @@ template = """
     </style>
 </head>
 <body>
-<div style="width: 600px;">
+<div style="width: 750px;">
   <table cellpadding="0" cellspacing="0" style="width: 100%; border-spacing: 0;">
     <tr>
       <td style="width: 120px; vertical-align: top; padding: 0;">
@@ -184,7 +184,6 @@ def index():
 <head>
   <meta charset="utf-8" />
   <title>Email Signature</title>
-  <!-- Google Fonts (often blocked by email clients, but included here for completeness) -->
   <link 
     href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" 
     rel="stylesheet" 
@@ -281,7 +280,7 @@ def index():
           margin-bottom: 16px;
         "
       >
-        <strong>{title},</strong> HEDY &amp; HOPP<br />
+        <strong>{title}","</strong> HEDY &amp; HOPP<br />
         <span style="color: #D4458E; font-weight: bold;">C</span> {cell_number}<br />
         <span style="color: #D4458E; font-weight: bold;">E</span> 
         <a 
