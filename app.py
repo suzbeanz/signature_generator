@@ -295,7 +295,7 @@ def index():
       <div 
         style="
           font-family: Arial, sans-serif;
-          font-size: 32px;
+          font-size: 28x;
           line-height: 1;
           color: #D4458E;
           margin: 0 0 8px 0;
