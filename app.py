@@ -11,13 +11,11 @@ from google.auth import default
 from google.auth import exceptions as auth_exceptions 
 from urllib.parse import quote
 
-# Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 
-# Set the path to the credentials file
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = os.path.join(os.path.dirname(__file__), 'credentials', 'credentials.json')
 
 BUCKET_NAME = 'hoppian-signature-images'
@@ -38,7 +36,7 @@ template = """
 <html>
 <head>
     <style>
-        body {{ font-family: 'Avenir', sans-serif; color: #5c5a5b; background-image: url('{background_url}'); }}
+        body {{ font-family: Arial, sans-serif; color: #5c5a5b; background-image: url('{background_url}'); }}
         a {{ color: #DB499A; text-decoration: none; }}
         .banner-container {{
             text-align: left;
@@ -49,36 +47,42 @@ template = """
             margin-right: 10px;
             vertical-align: top;
         }}
-        .banner-container img {{
-            vertical-align: top;
-        }}
     </style>
 </head>
 <body>
-<div style="width: 800x;">
-  <table cellpadding="0" cellspacing="0" style="width: 100%; border-spacing: 0;">
-    <tr>
-      <td style="width: 120px; vertical-align: top; padding: 0;">
-        <img src="{headshot_url}" alt="{fname} Headshot" style="width: 120px; height: 120px; display: block; border-radius: 0 0 45px 0;">
-      </td>
-      <td style="vertical-align: top; padding-left: 10px; text-align: left;">
-        <p style="margin: 1px 0;"><strong>{fname}</strong></p>
-        <p style="margin: 4px 0;"><em>{title}</em></p>
-        {cell_number}
-        <p style="margin: 4px 0;"><strong>E </strong><a href="mailto:{email}">{email}</a></p>
-        {calendar_link}
-      </td>
-    </tr>å
-  </table>
-  <div class="banner-container">
-    <a href="https://hedyandhopp.com/" style="display: inline;">
-      <img src="{logo_url}" alt="Hedy & Hopp Banner" style="vertical-align: top; width: auto; height: 85px;">
-    </a>
-    <a href="https://open.spotify.com/show/6cBADj7GMn7Rzou4dcVH3B" style="display: inline; margin-left: 1%;">
-      <img src="https://storage.googleapis.com/hoppian-signature-images/podlogowhite400px.png" alt="We Are, Marketing Happy Podcast" style="vertical-align: top; width: 82px; height: 80px;">
-    </a>
-  </div>
-</div>
+    <div style="max-width: 700px; margin: 0 auto;">
+        <div style="display: flex;">
+            <div style="flex-shrink: 0; margin-right: 20px;">
+                <img src="{headshot_url}" alt="Headshot"
+                     style="border-radius: 8px; max-width: 120px;">
+            </div>
+            <div style="flex-grow: 1;">
+                <div style="font-family: Arial, sans-serif; font-size: 28px; line-height: 1.2; color: #D4458E; margin: 0 0 8px 0;">
+                    {fname}<br>{lname}
+                </div>
+                <div style="margin-bottom: 16px;">
+                    <strong>{title}, </strong>HEDY &amp; HOPP<br>
+                    <span style="color: #D4458E; font-weight: bold;">C</span> {cell_number}<br>
+                    <span style="color: #D4458E; font-weight: bold;">E</span> 
+                    <a href="mailto:{email}" style="color: #5C5A5B; text-decoration: none;">
+                        {email}
+                    </a>
+                </div>
+                {f'<p><a href="{calendar_link}" style="color:#DB499A;">Schedule Time With Me</a></p>' if calendar_link else ''}
+            </div>
+        </div>
+        <div class="banner-container">
+            <a href="https://hedyandhopp.com/">
+                <img src="{logo_url}" alt="Hedy & Hopp Banner"
+                     style="vertical-align: top; width: auto; height: 85px;">
+            </a>
+            <a href="https://open.spotify.com/show/6cBADj7GMn7Rzou4dcVH3B" style="margin-left: 1%;">
+                <img src="https://storage.googleapis.com/hoppian-signature-images/podlogowhite400px.png"
+                     alt="We Are, Marketing Happy Podcast"
+                     style="vertical-align: top; width: 82px; height: 80px;">
+            </a>
+        </div>
+    </div>
 </body>
 </html>
 """
@@ -97,9 +101,6 @@ def upload_to_gcs(source_file_name, destination_blob_name):
 
     blob.upload_from_filename(source_file_name)
 
-    # Do not attempt to make the blob public or access its ACL.
-
-    # URL-encode the blob name in the public URL
     encoded_blob_name = quote(destination_blob_name, safe='')
 
     public_url = f"https://storage.googleapis.com/{BUCKET_NAME}/{encoded_blob_name}"
@@ -112,9 +113,9 @@ def upload_to_gcs(source_file_name, destination_blob_name):
 def process_image(image_path):
     output_path = os.path.join(app.config['UPLOAD_FOLDER'], 'processed_' + os.path.basename(image_path))
     with Image.open(image_path) as img:
-        img = img.convert('RGB')  # Ensure image is in RGB format
-        img.thumbnail((300, 300), Image.ANTIALIAS)  # Resize while maintaining aspect ratio
-        img.save(output_path, 'JPEG', quality=95)  # Save with higher quality
+        img = img.convert('RGB')
+        img.thumbnail((300, 300), Image.ANTIALIAS)
+        img.save(output_path, 'JPEG', quality=95)
     return output_path
 
 def check_credentials():
@@ -124,18 +125,26 @@ def check_credentials():
 
 check_credentials()
 
+def format_phone_number(phone):
+    digits = re.sub(r'\D', '', phone)
+    if len(digits) == 10:
+        return f"({digits[:3]}) {digits[3:6]}-{digits[6:]}"
+    return phone
+
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
         try:
-            # Get form data
-            fname = request.form.get('fname')
-            lname = request.form.get('lname')
-            title = request.form.get('title')
-            cell_number = request.form.get('cell_number')
-            email = request.form.get('email')
+            fname = request.form.get('fname', '')
+            lname = request.form.get('lname', '')
+            title = request.form.get('title', '')
+            cell_number = format_phone_number(request.form.get('cell_number', ''))
+            email = request.form.get('email', '')
+            calendar_link = request.form.get('calendar_link', '') 
             headshot = request.files.get('headshot')
-            calendar_link = request.form.get('calendar_link', '')
+            
+            if not headshot:
+                raise ValueError("Headshot file is required.")
 
             if headshot and allowed_file(headshot.filename):
                 filename = secure_filename(headshot.filename)
@@ -146,12 +155,10 @@ def index():
 
                 destination_blob_name = f"headshots/{os.path.basename(processed_image_path)}"
                 try:
-                    # Attempt to upload and get the public URL
                     headshot_url = upload_to_gcs(processed_image_path, destination_blob_name)
                 except Exception as e:
                     logging.error(f"Exception during GCS upload: {e}", exc_info=True)
                     error_message = f"An error occurred during file upload: {e}"
-                    # Handle the error as before
                     return render_template(
                         'index.html',
                         fname=fname,
@@ -161,8 +168,6 @@ def index():
                         email=email,
                         error_message=error_message
                     )
-
-                # Clean up local files
                 os.remove(temp_image_path)
                 os.remove(processed_image_path)
 
@@ -184,14 +189,9 @@ def index():
 <head>
   <meta charset="utf-8" />
   <title>Email Signature</title>
-  <link 
-    href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" 
-    rel="stylesheet" 
-  />
 </head>
 <body style="margin: 0; padding: 0;">
 
-<!-- Outer table: 700px wide -->
 <table 
   width="850"
   border="0"
@@ -203,9 +203,7 @@ def index():
     margin: 0 auto;
   "
 >
-  <!-- ============ ROW 1 ============ -->
   <tr>
-    <!-- Column 1: Ampersand Image (225 x 225) -->
     <td
       width="225"
       valign="top"
@@ -226,8 +224,7 @@ def index():
         "
       />
     </td>
-    
-    <!-- Column 2: Headshot Image (225 x 225) -->
+  
     <td
       width="225"
       valign="top"
@@ -249,14 +246,13 @@ def index():
       />
     </td>
     
-    <!-- Column 3: Text Area -->
     <td
       width="400"
       valign="top"
       style="
         padding: 10px;
         margin: 0;
-        font-family: 'Avenir', Arial, sans-serif;
+        font-family: Arial, sans-serif;
         font-size: 14px;
         line-height: 1.3;
         color: #5C5A5B;
@@ -265,7 +261,7 @@ def index():
     >
       <div 
         style="
-          font-family: 'Bebas Neue', Arial, sans-serif;
+          font-family: Arial, sans-serif;
           font-size: 40px;
           line-height: 1;
           color: #D4458E;
@@ -298,10 +294,11 @@ def index():
   <tr>
     <td
       colspan="2"
-      valign="top"
+      valign="bottom"
       style="
         padding: 0;
         margin: 0;
+        vertical-align: bottom;
       "
     >
       <img
@@ -319,12 +316,12 @@ def index():
     
     <td
       width="400"
-      background-color="#FFFFFF";
-      valign="middle";
+      valign="bottom"
       style="
         padding: 0;
         margin: 0;
         text-align: center;
+        vertical-align: bottom;
       "
     >
       <a
