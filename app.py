@@ -36,52 +36,85 @@ template = """
 <html>
 <head>
     <style>
-        body {{ font-family: Arial, sans-serif; color: #5c5a5b; background-image: url('{background_url}'); }}
-        a {{ color: #DB499A; text-decoration: none; }}
-        .banner-container {{
-            text-align: left;
-            margin-top: 20px;
+        .signature-wrapper {{
+            width: 600px;
+            height: 200px;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            color: #5c5a5b;
         }}
-        .banner-container a {{
-            display: inline;
-            margin-right: 10px;
-            vertical-align: top;
+        .headshot {{
+            width: 80px;
+            height: 80px;
+            border-radius: 8px;
+            display: block;
+        }}
+        .text-area {{
+            font-size: 12px;
+            line-height: 1.2;
+            padding: 5px;
+        }}
+        .name {{
+            font-size: 16px;
+            color: #D4458E;
+            margin: 0 0 8px 0;
+        }}
+        .bottom-banner {{
+            width: 180px;
+            height: 40px;
+            display: block;
+        }}
+        .podcast-logo {{
+            width: 40px;
+            height: 40px;
+            display: block;
+            margin-top: 4px;
         }}
     </style>
 </head>
 <body>
-    <div style="max-width: 700px; margin: 0 auto;">
-        <div style="display: flex;">
-            <div style="flex-shrink: 0; margin-right: 20px;">
-                <img src="{headshot_url}" alt="Headshot"
-                     style="border-radius: 8px; max-width: 120px;">
-            </div>
-            <div style="flex-grow: 1;">
-                <div style="font-family: Arial, sans-serif; font-size: 28px; line-height: 1.2; color: #D4458E; margin: 0 0 8px 0;">
-                    {fname}<br>{lname}
-                </div>
-                <div style="margin-bottom: 16px;">
-                    <strong>{title}, </strong>HEDY &amp; HOPP<br>
-                    <span style="color: #D4458E; font-weight: bold;">C</span> {cell_number}<br>
-                    <span style="color: #D4458E; font-weight: bold;">E</span> 
-                    <a href="mailto:{email}" style="color: #5C5A5B; text-decoration: none;">
-                        {email}
-                    </a>
-                </div>
-                {f'<p><a href="{calendar_link}" style="color:#DB499A;">Schedule Time With Me</a></p>' if calendar_link else ''}
-            </div>
-        </div>
-        <div class="banner-container">
-            <a href="https://hedyandhopp.com/">
-                <img src="{logo_url}" alt="Hedy & Hopp Banner"
-                     style="vertical-align: top; width: auto; height: 85px;">
-            </a>
-            <a href="https://open.spotify.com/show/6cBADj7GMn7Rzou4dcVH3B" style="margin-left: 1%;">
-                <img src="https://storage.googleapis.com/hoppian-signature-images/podlogowhite400px.png"
-                     alt="We Are, Marketing Happy Podcast"
-                     style="vertical-align: top; width: 82px; height: 80px;">
-            </a>
-        </div>
+    <div class="signature-wrapper">
+        <table cellspacing="0" cellpadding="0" style="border-collapse: collapse;">
+            <tr>
+                <td style="vertical-align: top; padding: 5px;">
+                    <img 
+                        src="{headshot_url}" 
+                        alt="Headshot"
+                        class="headshot"
+                    />
+                </td>
+
+                <td class="text-area" style="vertical-align: top;">
+                    <div class="name">
+                        {fname}<br>{lname}
+                    </div>
+                    <div>
+                        <strong>{title}, </strong>HEDY &amp; HOPP<br>
+                        <span style="color: #D4458E; font-weight: bold;">C</span> {cell_number}<br>
+                        <span style="color: #D4458E; font-weight: bold;">E</span> 
+                        <a href="mailto:{email}" style="color: #5C5A5B; text-decoration: none;">
+                            {email}
+                        </a>
+                    </div>
+                    {f'<p><a href="{calendar_link}" style="color:#DB499A;">Schedule Time With Me</a></p>' if calendar_link else ''}
+                </td>
+
+                <td style="vertical-align: bottom; text-align: right; padding: 5px;">
+                    <img
+                        src="https://storage.googleapis.com/hoppian-signature-images/2025signatureairbanner.png"
+                        alt="Bottom Banner"
+                        class="bottom-banner"
+                    />
+                    <img
+                        src="https://storage.googleapis.com/hoppian-signature-images/podlogowhite400px.png"
+                        alt="Podcast Logo"
+                        class="podcast-logo"
+                    />
+                </td>
+            </tr>
+        </table>
     </div>
 </body>
 </html>
@@ -262,7 +295,7 @@ def index():
       <div 
         style="
           font-family: Arial, sans-serif;
-          font-size: 40px;
+          font-size: 32px;
           line-height: 1;
           color: #D4458E;
           margin: 0 0 8px 0;
@@ -310,6 +343,7 @@ def index():
           display: block;
           border: 0;
           outline: none;
+          vertical-align: bottom;
         "
       />
     </td>
