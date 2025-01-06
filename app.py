@@ -365,7 +365,7 @@ def index():
         <img
           src="https://storage.googleapis.com/hoppian-signature-images/podlogowhite400px.png"
           alt="Podcast Logo"
-          width="280"
+          width="300"
           style="
             display: inline-block;
             border: 0;
