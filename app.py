@@ -44,6 +44,7 @@ template = """
             padding: 0;
             font-family: Arial, sans-serif;
             color: #5c5a5b;
+            text-align: left;
         }}
         .headshot {{
             width: 80px;
@@ -72,11 +73,20 @@ template = """
             display: block;
             margin-top: 4px;
         }}
+        table {{
+            border-collapse: collapse;
+            margin: 0;
+            padding: 0;
+            text-align: left;
+        }}
+        body {{
+            text-align: left;
+        }}
     </style>
 </head>
 <body>
     <div class="signature-wrapper">
-        <table cellspacing="0" cellpadding="0" style="border-collapse: collapse;">
+        <table cellspacing="0" cellpadding="0">
             <tr>
                 <td style="vertical-align: top; padding: 5px;">
                     <img 
@@ -309,7 +319,7 @@ def index():
           margin-bottom: 0px;
         "
       >
-        <strong>{title}, </strong>HEDY &amp; HOPP<br />
+        <strong>{title}, </strong>Hedy &amp; Hopp<br />
         <span style="color: #D4458E; font-weight: bold;">C:</span> {cell_number}<br />
         <span style="color: #D4458E; font-weight: bold;">E:</span> 
         <a href="mailto:{email}" 
