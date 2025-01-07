@@ -13,7 +13,7 @@ COPY . .
 COPY credentials/credentials.json /app/credentials/credentials.json
 
 # Set environment variables
-# ENV GOOGLE_APPLICATION_CREDENTIALS=/app/credentials/credentials.json
+ENV GOOGLE_APPLICATION_CREDENTIALS=/app/credentials/credentials.json
 
 # Expose the port the app runs on
 EXPOSE 8080

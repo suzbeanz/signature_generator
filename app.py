@@ -217,7 +217,7 @@ def index():
                 )
 
             signature_html = f"""
-            <!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8" />
@@ -226,19 +226,19 @@ def index():
 <body style="margin: 0; padding: 0;">
 
 <table 
-  width="850"
+  width="600"
   border="0"
   cellpadding="0"
   cellspacing="0"
   style="
     border-collapse: collapse;
-    width: 700px;
+    width: 600px;
     margin: 0 auto;
   "
 >
   <tr>
     <td
-      width="225"
+      width="200"
       valign="top"
       style="
         padding: 0;
@@ -248,8 +248,8 @@ def index():
       <img
         src="https://storage.googleapis.com/hoppian-signature-images/2025ampersand.png"
         alt="Ampersand"
-        width="225"
-        height="225"
+        width="200"
+        height="200"
         style="
           display: block;
           border: 0;
@@ -259,7 +259,7 @@ def index():
     </td>
   
     <td
-      width="225"
+      width="200"
       valign="top"
       style="
         padding: 0;
@@ -269,8 +269,8 @@ def index():
       <img
         src="{headshot_url}"
         alt="Headshot"
-        width="225"
-        height="225"
+        width="200"
+        height="200"
         style="
           display: block;
           border: 0;
@@ -280,13 +280,13 @@ def index():
     </td>
     
     <td
-      width="400"
+      width="200"
       valign="top"
       style="
         padding: 10px;
         margin: 0;
         font-family: Arial, sans-serif;
-        font-size: 14px;
+        font-size: 13px;
         line-height: 1.4;
         color: #5C5A5B;
         background-color: #FFFFFF;
@@ -295,26 +295,25 @@ def index():
       <div 
         style="
           font-family: Arial, sans-serif;
-          font-size: 28px;
+          font-size: 30px;
           line-height: 1;
           color: #D4458E;
           margin: 0 0 8px 0;
         "
       >
-        {fname}</br>{lname}
+        {fname}<br>{lname}
       </div>
       
       <div 
         style="
-          margin-bottom: 16px;
+          margin-bottom: 0px;
         "
       >
         <strong>{title}, </strong>HEDY &amp; HOPP<br />
-        <span style="color: #D4458E; font-weight: bold;">C</span> {cell_number}<br />
-        <span style="color: #D4458E; font-weight: bold;">E</span> 
-        <a 
-          href="mailto:{email}" 
-          style="color: #5C5A5B; text-decoration: none;"
+        <span style="color: #D4458E; font-weight: bold;">C:</span> {cell_number}<br />
+        <span style="color: #D4458E; font-weight: bold;">E:</span> 
+        <a href="mailto:{email}" 
+          style="color: #5C5A5B; text-decoration: none; margin-bottom: 0px;"
         >
           {email}
         </a>
@@ -324,20 +323,19 @@ def index():
     </td>
   </tr>
   
-  <tr>
+  <tr style="vertical-align: bottom;">
     <td
       colspan="2"
       valign="bottom"
       style="
         padding: 0;
         margin: 0;
-        vertical-align: bottom;
       "
     >
       <img
         src="https://storage.googleapis.com/hoppian-signature-images/2025signatureairbanner.png"
         alt="Bottom Banner"
-        width="450"
+        width="400"
         height="100"
         style="
           display: block;
@@ -349,7 +347,7 @@ def index():
     </td>
     
     <td
-      width="400"
+      width="200"
       valign="bottom"
       style="
         padding: 0;
@@ -363,13 +361,14 @@ def index():
         style="text-decoration: none; border: 0; outline: none;"
       >
         <img
-          src="https://storage.googleapis.com/hoppian-signature-images/podlogowhite400px.png"
+          src="https://storage.googleapis.com/hoppian-signature-images/wamhpod250100.png"
           alt="Podcast Logo"
-          width="300"
+          width="250"
           style="
             display: inline-block;
             border: 0;
             outline: none;
+            vertical-align: bottom;
           "
         />
       </a>
