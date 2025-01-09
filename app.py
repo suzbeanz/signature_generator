@@ -62,7 +62,7 @@ template = """
       "
     >
       <img
-        src="https://storage.googleapis.com/hçoppian-signature-images/2025ampersand.png"
+        src="https://storage.googleapis.com/hoppian-signature-images/2025ampersand.png"
         alt="Ampersand"
         width="150"
         height="150"
