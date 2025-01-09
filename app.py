@@ -35,97 +35,157 @@ template = """
 <!DOCTYPE html>
 <html>
 <head>
-    <style>
-        .signature-wrapper {{
-            width: 600px;
-            height: 200px;
-            overflow: hidden;
-            margin: 0;
-            padding: 0;
-            font-family: Arial, sans-serif;
-            color: #5c5a5b;
-            text-align: left;
-        }}
-        .headshot {{
-            width: 80px;
-            height: 80px;
-            border-radius: 8px;
-            display: block;
-        }}
-        .text-area {{
-            font-size: 12px;
-            line-height: 1.2;
-            padding: 5px;
-        }}
-        .name {{
-            font-size: 16px;
-            color: #D4458E;
-            margin: 0 0 8px 0;
-        }}
-        .bottom-banner {{
-            width: 180px;
-            height: 40px;
-            display: block;
-        }}
-        .podcast-logo {{
-            width: 40px;
-            height: 40px;
-            display: block;
-            margin-top: 4px;
-        }}
-        table {{
-            border-collapse: collapse;
-            margin: 0;
-            padding: 0;
-            text-align: left;
-        }}
-        body {{
-            text-align: left;
-        }}
-    </style>
+  <meta charset="utf-8" />
+  <title>Email Signature</title>
 </head>
-<body>
-    <div class="signature-wrapper">
-        <table cellspacing="0" cellpadding="0">
-            <tr>
-                <td style="vertical-align: top; padding: 5px;">
-                    <img 
-                        src="{headshot_url}" 
-                        alt="Headshot"
-                        class="headshot"
-                    />
-                </td>
+<body style="margin: 0; padding: 0; text-align: left;">
 
-                <td class="text-area" style="vertical-align: top;">
-                    <div class="name">
-                        {fname}<br>{lname}
-                    </div>
-                    <div>
-                        <strong>{title}, </strong>HEDY &amp; HOPP<br>
-                        <span style="color: #D4458E; font-weight: bold;">C</span> {cell_number}<br>
-                        <span style="color: #D4458E; font-weight: bold;">E</span> 
-                        <a href="mailto:{email}" style="color: #5C5A5B; text-decoration: none;">
-                            {email}
-                        </a>
-                    </div>
-                    {f'<p><a href="{calendar_link}" style="color:#DB499A;">Schedule Time With Me</a></p>' if calendar_link else ''}
-                </td>
+<table 
+  width="100%"
+  border="0"
+  cellpadding="0"
+  cellspacing="0"
+  style="
+    border-collapse: collapse;
+    max-width: 600px;
+    margin: 0;
+    text-align: left;
+  "
+>
+  <tr>
+    <td
+      width="150"
+      valign="top"
+      style="
+        padding: 0;
+        margin: 0;
+      "
+    >
+      <img
+        src="https://storage.googleapis.com/hçoppian-signature-images/2025ampersand.png"
+        alt="Ampersand"
+        width="150"
+        height="150"
+        style="
+          display: block;
+          border: 0;
+          outline: none;
+        "
+      />
+    </td>
 
-                <td style="vertical-align: bottom; text-align: right; padding: 5px;">
-                    <img
-                        src="https://storage.googleapis.com/hoppian-signature-images/2025signatureairbanner.png"
-                        alt="Bottom Banner"
-                        class="bottom-banner"
-                    />
-                    <img
-                        src="https://storage.googleapis.com/hoppian-signature-images/podlogowhite400px.png"
-                        alt="Podcast Logo"
-                        class="podcast-logo"
-                    />
-                </td>
-            </tr>
-        </table>
-    </div>
+    <td
+      width="150"
+      valign="top"
+      style="
+        padding: 0;
+        margin: 0;
+      "
+    >
+      <img
+        src="{headshot_url}"
+        alt="Headshot"
+        width="150"
+        height="150"
+        style="
+          display: block;
+          border: 0;
+          outline: none;
+        "
+      />
+    </td>
+
+    <td
+      width="300"
+      valign="top"
+      style="
+        padding: 10px;
+        margin: 0;
+        font-family: Arial, sans-serif;
+        font-size: 12px;
+        line-height: 1.4;
+        color: #5C5A5B;
+        background-color: #FFFFFF;
+      "
+    >
+      <div 
+        style="
+          font-family: Arial, sans-serif;
+          font-size: 24px;
+          line-height: 1.2;
+          color: #D4458E;
+          margin: 0 0 6px 0;
+        "
+      >
+        {fname} {lname}
+      </div>
+
+      <div>
+        <strong>{title},</strong> Hedy &amp; Hopp<br />
+        <span style="color: #D4458E; font-weight: bold;">C:</span> {cell_number}<br />
+        <span style="color: #D4458E; font-weight: bold;">E:</span> 
+        <a href="mailto:{email}" 
+          style="color: #5C5A5B; text-decoration: none;"
+        >
+          {email}
+        </a>
+      </div>
+
+      {calendar_link}
+    </td>
+  </tr>
+
+  <tr>
+    <td
+      colspan="2"
+      valign="top"
+      style="
+        padding: 0;
+        margin: 0;
+      "
+    >
+      <img
+        src="https://storage.googleapis.com/hoppian-signature-images/2025signatureairbanner.png"
+        alt="Bottom Banner"
+        width="300"
+        height="75"
+        style="
+          display: block;
+          border: 0;
+          outline: none;
+        "
+      />
+    </td>
+
+    <td
+      width="300"
+      valign="top"
+      style="
+        padding: 0;
+        margin: 0;
+        text-align: left;
+      "
+    >
+      <a
+        href="https://open.spotify.com/show/6cBADj7GMn7Rzou4dcVH3B"
+        style="text-decoration: none; border: 0; outline: none;"
+      >
+        <img
+          src="https://storage.googleapis.com/hoppian-signature-images/wamh30075.png"
+          alt="Podcast Logo"
+          width="300"
+          height="75"
+          style="
+            display: inline-block;
+            border: 0;
+            outline: none;
+          "
+        />
+      </a>
+    </td>
+  </tr>
+</table>
+
 </body>
 </html>
 """
@@ -209,6 +269,7 @@ def index():
                         title=title,
                         cell_number=cell_number,
                         email=email,
+                        calendar_link=calendar_link,
                         error_message=error_message
                     )
                 os.remove(temp_image_path)
@@ -223,172 +284,19 @@ def index():
                     title=title,
                     cell_number=cell_number,
                     email=email,
+                    calendar_link=calendar_link,
                     error_message=error_message
                 )
 
-            signature_html = f"""
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8" />
-  <title>Email Signature</title>
-</head>
-<body style="margin: 0; padding: 0;">
-
-<table 
-  width="600"
-  border="0"
-  cellpadding="0"
-  cellspacing="0"
-  style="
-    border-collapse: collapse;
-    width: 600px;
-    margin: 0 auto;
-  "
->
-  <tr>
-    <td
-      width="200"
-      valign="top"
-      style="
-        padding: 0;
-        margin: 0;
-      "
-    >
-      <img
-        src="https://storage.googleapis.com/hoppian-signature-images/2025ampersand.png"
-        alt="Ampersand"
-        width="200"
-        height="200"
-        style="
-          display: block;
-          border: 0;
-          outline: none;
-        "
-      />
-    </td>
-  
-    <td
-      width="200"
-      valign="top"
-      style="
-        padding: 0;
-        margin: 0;
-      "
-    >
-      <img
-        src="{headshot_url}"
-        alt="Headshot"
-        width="200"
-        height="200"
-        style="
-          display: block;
-          border: 0;
-          outline: none;
-        "
-      />
-    </td>
-    
-    <td
-      width="200"
-      valign="top"
-      style="
-        padding: 10px;
-        margin: 0;
-        font-family: Arial, sans-serif;
-        font-size: 13px;
-        line-height: 1.4;
-        color: #5C5A5B;
-        background-color: #FFFFFF;
-      "
-    >
-      <div 
-        style="
-          font-family: Arial, sans-serif;
-          font-size: 30px;
-          line-height: 1;
-          color: #D4458E;
-          margin: 0 0 8px 0;
-        "
-      >
-        {fname}<br>{lname}
-      </div>
-      
-      <div 
-        style="
-          margin-bottom: 0px;
-        "
-      >
-        <strong>{title}, </strong>Hedy &amp; Hopp<br />
-        <span style="color: #D4458E; font-weight: bold;">C:</span> {cell_number}<br />
-        <span style="color: #D4458E; font-weight: bold;">E:</span> 
-        <a href="mailto:{email}" 
-          style="color: #5C5A5B; text-decoration: none; margin-bottom: 0px;"
-        >
-          {email}
-        </a>
-      </div>
-      {f'<p><a href="{calendar_link}" style="color:#DB499A">Schedule Time With Me</a></p>' if calendar_link else ''}
-      
-    </td>
-  </tr>
-  
-  <tr style="vertical-align: bottom;">
-    <td
-      colspan="2"
-      valign="bottom"
-      style="
-        padding: 0;
-        margin: 0;
-      "
-    >
-      <img
-        src="https://storage.googleapis.com/hoppian-signature-images/2025signatureairbanner.png"
-        alt="Bottom Banner"
-        width="400"
-        height="100"
-        style="
-          display: block;
-          border: 0;
-          outline: none;
-          vertical-align: bottom;
-        "
-      />
-    </td>
-    
-    <td
-      width="200"
-      valign="bottom"
-      style="
-        padding: 0;
-        margin: 0;
-        text-align: center;
-        vertical-align: bottom;
-      "
-    >
-      <a
-        href="https://open.spotify.com/show/6cBADj7GMn7Rzou4dcVH3B"
-        style="text-decoration: none; border: 0; outline: none;"
-      >
-        <img
-          src="https://storage.googleapis.com/hoppian-signature-images/wamhpod250100.png"
-          alt="Podcast Logo"
-          width="250"
-          style="
-            display: inline-block;
-            border: 0;
-            outline: none;
-            vertical-align: bottom;
-          "
-        />
-      </a>
-    </td>
-  </tr>
-</table>
-
-</body>
-</html>
-"""
+            signature_html = template.format(
+                fname=fname,
+                lname=lname,
+                title=title,
+                cell_number=cell_number,
+                email=email,
+                headshot_url=headshot_url,
+                calendar_link=f'<p style="margin: 8px 0 0 0;"><a href="{calendar_link}" style="color:#DB499A; text-decoration: none; font-weight: bold; text-decoration: underline;">Schedule Time With Me</a></p>' if calendar_link else ''
+            )
 
             signature_filename = f"signature_{secure_filename(fname.lower().replace(' ', '_'))}.html"
             signature_file_path = os.path.join(app.config['UPLOAD_FOLDER'], signature_filename)
@@ -397,12 +305,14 @@ def index():
 
             return render_template(
                 'index.html',
-                signature=signature_html,
-                download_link=url_for('download_file', filename=signature_filename),
+                fname=fname,
+                lname=lname,
                 title=title,
                 cell_number=cell_number,
                 email=email,
-                calendar_link=calendar_link
+                calendar_link=calendar_link,
+                signature=signature_html,
+                download_link=url_for('download_file', filename=signature_filename)
             )
 
         except Exception as e:
@@ -410,11 +320,13 @@ def index():
             error_message = f"An error occurred: {e}"
             return render_template(
                 'index.html',
-                error_message=error_message,
-                name=request.form.get('fname', 'lname'),
-                title=request.form.get('title', ''),
-                cell_number=request.form.get('cell_number', ''),
-                email=request.form.get('email', '')
+                fname=fname,
+                lname=lname,
+                title=title,
+                cell_number=cell_number,
+                email=email,
+                calendar_link=calendar_link,
+                error_message=error_message
             ), 500
     else:
         return render_template('index.html')

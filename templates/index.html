@@ -17,100 +17,36 @@
         {% endif %}
 
         <form method="POST" enctype="multipart/form-data" style="max-width: 600px; margin: 0 auto;">
-            <!-- First & Last Name side by side -->
-            <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
-              <div style="width: 50%;">
-                <label for="fname">First Name (required):</label><br>
-                <input 
-                  type="text" 
-                  id="fname" 
-                  name="fname" 
-                  required 
-                  value="{{ fname or '' }}"
-                  style="width: 100%; box-sizing: border-box;"
-                >
-              </div>
-          
-              <div style="width: 50%;">
-                <label for="lname">Last Name (required):</label><br>
-                <input 
-                  type="text" 
-                  id="lname" 
-                  name="lname" 
-                  required 
-                  value="{{ lname or '' }}"
-                  style="width: 100%; box-sizing: border-box;"
-                >
-              </div>
-            </div>
-          
-            <!-- Title -->
-            <label for="title">Title (required):</label><br>
-            <input 
-              type="text" 
-              id="title" 
-              name="title" 
-              required 
-              value="{{ title or '' }}"
-              style="width: 100%; box-sizing: border-box; margin-bottom: 1rem;"
-            >
-          
-            <!-- Cell Number -->
-            <label for="cell_number">Cell Number:</label><br>
-            <input 
-              type="text" 
-              id="cell_number" 
-              name="cell_number"
-              value="{{ cell_number or '' }}"
-              style="width: 100%; box-sizing: border-box; margin-bottom: 1rem;"
-            >
-          
-            <!-- Email -->
-            <label for="email">Email (required):</label><br>
-            <input 
-              type="email" 
-              id="email" 
-              name="email" 
-              required 
-              value="{{ email or '' }}"
-              style="width: 100%; box-sizing: border-box; margin-bottom: 1rem;"
-            >
-          
-            <!-- Calendar Link -->
-            <label for="calendar_link">Calendar Link:</label><br>
-            <input 
-              type="url" 
-              id="calendar_link" 
-              name="calendar_link"
-              value="{{ calendar_link or '' }}"
-              style="width: 100%; box-sizing: border-box; margin-bottom: 1rem;"
-            >
-          
-            <!-- Headshot -->
-            <label for="headshot">
-              Upload Headshot (required):<br>
-              <em>Square Image Under 2MB</em>
-            </label><br>
-            <input 
-              type="file" 
-              id="headshot" 
-              name="headshot" 
-              accept="image/*" 
-              required
-              style="margin-bottom: 1rem;"
-            >
-          
-            <!-- Submit Button -->
-            <button type="submit">Generate Signature</button>
-          </form>
-          
+            <label for="fname">First Name:</label>
+            <input type="text" id="fname" name="fname" value="{{ fname }}" required>
+
+            <label for="lname">Last Name:</label>
+            <input type="text" id="lname" name="lname" value="{{ lname }}" required>
+
+            <label for="title">Title:</label>
+            <input type="text" id="title" name="title" value="{{ title }}" required>
+
+            <label for="cell_number">Cell Number:</label>
+            <input type="text" id="cell_number" name="cell_number" value="{{ cell_number }}" required>
+
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" value="{{ email }}" required>
+
+            <label for="calendar_link">Calendar Link:</label>
+            <input type="url" id="calendar_link" name="calendar_link" value="{{ calendar_link }}">
+
+            <label for="headshot">Headshot:</label>
+            <input type="file" id="headshot" name="headshot" required>
+
+            <button type="submit" class="button">Generate Signature</button>
+        </form>
 
         {% if signature %}
-            <h2>Your Generated Signature</h2>
             <div class="signature-preview">
-                {{ signature|safe }}
+                <h2>Generated Signature:</h2>
+                <div class="signature-html">{{ signature|safe }}</div>
+                <a href="{{ download_link }}" class="button">Download Signature</a>
             </div>
-            <a href="{{ download_link }}" class="download-btn">Download Signature</a>
         {% endif %}
     </div>
 </body>

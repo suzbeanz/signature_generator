@@ -73,7 +73,8 @@ input[type="radio"] {
     margin-right: 5px;
 }
 
-button {
+button,
+a.button {
     width: 40%;
     padding: 15px;
     background-color: #DB499A;
@@ -84,9 +85,12 @@ button {
     cursor: pointer;
     display: block;
     margin: 0 auto 20px;
+    text-align: center;
+    text-decoration: none;
 }
 
-button:hover {
+button:hover,
+a.button:hover {
     background-color: #c43b7d;
 }
 
@@ -103,24 +107,6 @@ button:hover {
     border: 1px solid #ccc;
     border-radius: 4px;
     background-color: #f9f9f9;
-}
-
-.download-btn {
-    margin-top: 40px;
-    background-color: #DB499A;
-    color: #FFFFFF;
-    width: 40%;
-    display: block;
-    padding: 15px;
-    font-size: 18px;
-    margin: 0 auto;
-    border-radius: 4px;
-    text-align: center;
-    text-decoration: none;
-}
-
-.download-btn:hover {
-    background-color: #c43b7d;
 }
 
 .banner-container img {
