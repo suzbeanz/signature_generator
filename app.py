@@ -37,86 +37,49 @@ template = """
 <head>
   <meta charset="utf-8" />
   <title>Email Signature</title>
+  <style>
+    body {{
+      margin: 0;
+      padding: 0;
+      text-align: left;
+    }}
+    table {{
+      border-collapse: collapse;
+      max-width: 600px;
+      margin: 0;
+      text-align: left;
+    }}
+    img {{
+      display: block;
+      border: 0;
+      outline: none;
+    }}
+  </style>
 </head>
-<body style="margin: 0; padding: 0; text-align: left;">
+<body>
 
-<table 
-  width="100%"
-  border="0"
-  cellpadding="0"
-  cellspacing="0"
-  style="
-    border-collapse: collapse;
-    max-width: 600px;
-    margin: 0;
-    text-align: left;
-  "
->
+<table width="100%" border="0" cellpadding="0" cellspacing="0">
   <tr>
-    <td
-      width="150"
-      valign="top"
-      style="
-        padding: 0;
-        margin: 0;
-      "
-    >
+    <td width="150" valign="top" style="padding: 0; margin: 0;">
       <img
         src="https://storage.googleapis.com/hoppian-signature-images/2025ampersand.png"
         alt="Ampersand"
         width="150"
         height="150"
-        style="
-          display: block;
-          border: 0;
-          outline: none;
-        "
       />
     </td>
 
-    <td
-      width="150"
-      valign="top"
-      style="
-        padding: 0;
-        margin: 0;
-      "
-    >
+    <td width="150" valign="top" style="padding: 0; margin: 0;">
       <img
         src="{headshot_url}"
         alt="Headshot"
         width="150"
         height="150"
-        style="
-          display: block;
-          border: 0;
-          outline: none;
-        "
       />
     </td>
 
-    <td
-      width="300"
-      valign="top"
-      style="
-        padding: 10px;
-        margin: 0;
-        font-family: Arial, sans-serif;
-        font-size: 12px;
-        line-height: 1.4;
-        color: #5C5A5B;
-        background-color: #FFFFFF;
-      "
-    >
-      <div 
-        style="
-          font-family: Arial, sans-serif;
-          font-size: 24px;
-          line-height: 1.2;
-          color: #D4458E;
-          margin: 0 0 6px 0;
-        "
-      >
+    <td width="300" valign="top" style="padding: 10px; margin: 0; font-family: Arial, sans-serif; font-size: 12px; line-height: 1.4; color: #5C5A5B; background-color: #FFFFFF;">
+      <div style="font-family: Arial, sans-serif; font-size: 24px; line-height: 1.2; color: #D4458E; margin: 0 0 6px 0;">
         {fname} {lname}
       </div>
 
@@ -124,9 +87,7 @@ template = """
         <strong>{title},</strong> Hedy &amp; Hopp<br />
         <span style="color: #D4458E; font-weight: bold;">C:</span> {cell_number}<br />
         <span style="color: #D4458E; font-weight: bold;">E:</span> 
-        <a href="mailto:{email}" 
-          style="color: #5C5A5B; text-decoration: none;"
-        >
+        <a href="mailto:{email}" style="color: #5C5A5B; text-decoration: none;">
           {email}
         </a>
       </div>
@@ -136,50 +97,22 @@ template = """
   </tr>
 
   <tr>
-    <td
-      colspan="2"
-      valign="top"
-      style="
-        padding: 0;
-        margin: 0;
-      "
-    >
+    <td colspan="2" valign="top" style="padding: 0; margin: 0;">
       <img
         src="https://storage.googleapis.com/hoppian-signature-images/2025signatureairbanner.png"
         alt="Bottom Banner"
         width="300"
         height="75"
-        style="
-          display: block;
-          border: 0;
-          outline: none;
-        "
       />
     </td>
 
-    <td
-      width="300"
-      valign="top"
-      style="
-        padding: 0;
-        margin: 0;
-        text-align: left;
-      "
-    >
-      <a
-        href="https://open.spotify.com/show/6cBADj7GMn7Rzou4dcVH3B"
-        style="text-decoration: none; border: 0; outline: none;"
-      >
+    <td width="300" valign="top" style="padding: 0; margin: 0; text-align: left;">
+      <a href="https://open.spotify.com/show/6cBADj7GMn7Rzou4dcVH3B" style="text-decoration: none; border: 0; outline: none;">
         <img
           src="https://storage.googleapis.com/hoppian-signature-images/wamh30075.png"
           alt="Podcast Logo"
           width="300"
-          height="75"
-          style="
-            display: inline-block;
-            border: 0;
-            outline: none;
-          "
+          style="display: inline-block; border: 0; outline: none;"
         />
       </a>
     </td>
