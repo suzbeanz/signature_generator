@@ -18,16 +18,12 @@ app = Flask(__name__)
 
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = os.path.join(os.path.dirname(__file__), 'credentials', 'credentials.json')
 
+# Set the bucket name directly
 BUCKET_NAME = 'hoppian-signature-images'
 
 UPLOAD_FOLDER = 'static/uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-
-BUCKET_NAME = os.environ.get('BUCKET_NAME', 'hoppian-signature-images')
-if not BUCKET_NAME:
-    logger.error("BUCKET_NAME environment variable is not set.")
-    raise EnvironmentError("BUCKET_NAME environment variable is not set.")
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
@@ -112,6 +108,7 @@ template = """
           src="https://storage.googleapis.com/hoppian-signature-images/wamh30075.png"
           alt="Podcast Logo"
           width="300"
+          height="75"
           style="display: inline-block; border: 0; outline: none;"
         />
       </a>
