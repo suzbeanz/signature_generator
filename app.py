@@ -105,7 +105,7 @@ template = """
     <td width="300" valign="top" style="padding: 0; margin: 0; text-align: left;">
       <a href="https://open.spotify.com/show/6cBADj7GMn7Rzou4dcVH3B" style="text-decoration: none; border: 0; outline: none;">
         <img
-          src="https://storage.googleapis.com/hoppian-signature-images/wamh30075.png"
+          src="https://storage.googleapis.com/hoppian-signature-images/wearemarketinghappypodcast.png"
           alt="Podcast Logo"
           width="300"
           height="75"
